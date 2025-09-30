@@ -9,8 +9,8 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  Request,
   UnauthorizedException,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -44,7 +44,7 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Request() req: any,
+    @Req() req: any,
     @UploadedFile() avatar?: Express.Multer.File,
   ) {
     const userId = req.user.userId;
@@ -59,5 +59,27 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/follow')
+  follow(@Param('id') followingId: string, @Req() req: any) {
+    return this.usersService.follow(req.user.id, followingId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/unfollow')
+  unfollow(@Param('id') followingId: string, @Req() req: any) {
+    return this.usersService.unfollow(req.user.id, followingId);
+  }
+
+  @Get(':id/followers')
+  getFollowers(@Param('id') userId: string) {
+    return this.usersService.getFollowers(userId);
+  }
+
+  @Get(':id/following')
+  getFollowing(@Param('id') userId: string) {
+    return this.usersService.getFollowing(userId);
   }
 }

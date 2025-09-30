@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -25,12 +26,14 @@ export class UsersService {
           password: hashedPassword,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('The email provided is already in use.');
+        throw new ConflictException(
+          'The email or username provided is already in use.',
+        );
       }
       throw new InternalServerErrorException(
         `Error creating user: ${error.message}`,
@@ -41,7 +44,7 @@ export class UsersService {
   async findAll() {
     try {
       return await this.prisma.user.findMany();
-    } catch (error) {
+    } catch (error: any) {
       throw new InternalServerErrorException(
         `Error retrieving users: ${error.message}`,
       );
@@ -51,11 +54,9 @@ export class UsersService {
   async findOne(id: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
-      if (!user) {
-        throw new NotFoundException(`User with ID "${id}" not found.`);
-      }
+      if (!user) throw new NotFoundException(`User with ID "${id}" not found.`);
       return user;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(
         `Error retrieving user with ID "${id}": ${error.message}`,
@@ -106,7 +107,7 @@ export class UsersService {
   async remove(id: string) {
     try {
       return await this.prisma.user.delete({ where: { id } });
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
@@ -119,10 +120,82 @@ export class UsersService {
     }
   }
 
+  async follow(followerId: string, followingId: string) {
+    try {
+      if (followerId === followingId) {
+        throw new ForbiddenException('You cannot follow yourself.');
+      }
+
+      return await this.prisma.follow.create({
+        data: {
+          followerId,
+          followingId,
+        },
+      });
+    } catch (error: any) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('You are already following this user.');
+      }
+      throw new InternalServerErrorException(
+        `Error following user with ID "${followingId}": ${error.message}`,
+      );
+    }
+  }
+
+  async unfollow(followerId: string, followingId: string) {
+    try {
+      const result = await this.prisma.follow.deleteMany({
+        where: {
+          followerId,
+          followingId,
+        },
+      });
+
+      if (result.count === 0) {
+        throw new NotFoundException('You are not following this user.');
+      }
+
+      return { message: 'Unfollowed successfully.' };
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error unfollowing user with ID "${followingId}": ${error.message}`,
+      );
+    }
+  }
+
+  async getFollowers(userId: string) {
+    try {
+      return await this.prisma.follow.findMany({
+        where: { followingId: userId },
+        include: { follower: true },
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error retrieving followers for user ID "${userId}": ${error.message}`,
+      );
+    }
+  }
+
+  async getFollowing(userId: string) {
+    try {
+      return await this.prisma.follow.findMany({
+        where: { followerId: userId },
+        include: { following: true },
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error retrieving following for user ID "${userId}": ${error.message}`,
+      );
+    }
+  }
+
   async findByEmail(email: string) {
     try {
       return await this.prisma.user.findUnique({ where: { email } });
-    } catch (error) {
+    } catch (error: any) {
       throw new InternalServerErrorException(
         `Error retrieving user with email "${email}": ${error.message}`,
       );
@@ -132,7 +205,7 @@ export class UsersService {
   async findByUsername(username: string) {
     try {
       return await this.prisma.user.findUnique({ where: { username } });
-    } catch (error) {
+    } catch (error: any) {
       throw new InternalServerErrorException(
         `Error retrieving user with username "${username}": ${error.message}`,
       );
