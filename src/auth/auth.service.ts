@@ -8,6 +8,8 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from 'generated/prisma';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,17 +18,12 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(data: {
-    name: string;
-    username: string;
-    email: string;
-    password: string;
-  }) {
+  async register(dto: RegisterDto) {
     try {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
 
       const user = await this.usersService.create({
-        ...data,
+        ...dto,
         password: hashedPassword,
       });
 
@@ -44,9 +41,9 @@ export class AuthService {
     }
   }
 
-  async login(params: { username?: string; email?: string; password: string }) {
+  async login(dto: LoginDto) {
     try {
-      const { username, email, password } = params;
+      const { username, email, password } = dto;
       let user;
 
       if (username) {

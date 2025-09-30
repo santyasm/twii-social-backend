@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from 'generated/prisma';
+import cloudinary from 'src/config/cloudinary.config';
 
 @Injectable()
 export class UsersService {
@@ -62,13 +63,35 @@ export class UsersService {
     }
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    file?: Express.Multer.File, // opcional
+  ) {
     try {
+      let avatarUrl = updateUserDto.avatarUrl;
+
+      if (file) {
+        const result = await new Promise<any>((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'avatars' },
+            (error, result) => {
+              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+          stream.end(file.buffer);
+        });
+
+        avatarUrl = result.secure_url;
+      }
+
       return await this.prisma.user.update({
         where: { id },
-        data: updateUserDto,
+        data: { ...updateUserDto, avatarUrl },
       });
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
