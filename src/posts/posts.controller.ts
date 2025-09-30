@@ -16,6 +16,8 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -58,5 +60,43 @@ export class PostsController {
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req?: any) {
     return this.postsService.remove(id, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/like')
+  likePost(@Param('id') postId: string, @Req() req: any) {
+    return this.postsService.likePost(req.user.id, postId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/unlike')
+  unlikePost(@Param('id') postId: string, @Req() req: any) {
+    return this.postsService.unlikePost(req.user.id, postId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comments')
+  createComment(
+    @Param('id') postId: string,
+    @Body() dto: CreateCommentDto,
+    @Req() req: any,
+  ) {
+    return this.postsService.createComment(req.user.id, postId, dto.content);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('comments/:id')
+  updateComment(
+    @Param('id') commentId: string,
+    @Body() dto: UpdateCommentDto,
+    @Req() req: any,
+  ) {
+    return this.postsService.updateComment(req.user.id, commentId, dto.content);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('comments/:id')
+  deleteComment(@Param('id') commentId: string, @Req() req: any) {
+    return this.postsService.deleteComment(req.user.id, commentId);
   }
 }
