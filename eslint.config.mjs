@@ -37,6 +37,7 @@ export default tseslint.config(
 
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/prefer-promise-reject-errors': 'off',
     },
   },
 );

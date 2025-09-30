@@ -66,7 +66,7 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-    file?: Express.Multer.File, // opcional
+    file?: Express.Multer.File,
   ) {
     try {
       let avatarUrl = updateUserDto.avatarUrl;
@@ -76,7 +76,6 @@ export class UsersService {
           const stream = cloudinary.uploader.upload_stream(
             { folder: 'avatars' },
             (error, result) => {
-              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
               if (error) return reject(error);
               resolve(result);
             },
