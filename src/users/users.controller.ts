@@ -9,6 +9,8 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -42,8 +44,15 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Request() req: any,
     @UploadedFile() avatar?: Express.Multer.File,
   ) {
+    const userId = req.user.userId;
+
+    if (id !== userId) {
+      throw new UnauthorizedException('You can only update your own user');
+    }
+
     return this.usersService.update(id, updateUserDto, avatar);
   }
 
