@@ -10,6 +10,7 @@ import {
   UploadedFile,
   Patch,
   Req,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -49,6 +50,13 @@ export class PostsController {
   @Get()
   findAll() {
     return this.postsService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('feed')
+  getFeed(@Req() req: any, @Query('onlyFollowing') onlyFollowing?: string) {
+    const filter = onlyFollowing === 'true';
+    return this.postsService.getFeed(req.user.id, filter);
   }
 
   @Get(':id')

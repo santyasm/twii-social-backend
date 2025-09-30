@@ -202,4 +202,40 @@ export class PostsService {
       );
     }
   }
+
+  async getFeed(userId: string, onlyFollowing: boolean = true) {
+    try {
+      if (onlyFollowing) {
+        const following = await this.prisma.follow.findMany({
+          where: { followerId: userId },
+          select: { followingId: true },
+        });
+
+        const followingIds = following.map((f) => f.followingId);
+
+        return await this.prisma.post.findMany({
+          where: { authorId: { in: followingIds } },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            author: true,
+            Like: true,
+            Comment: { include: { author: true } },
+          },
+        });
+      } else {
+        return await this.prisma.post.findMany({
+          orderBy: { createdAt: 'desc' },
+          include: {
+            author: true,
+            Like: true,
+            Comment: { include: { author: true } },
+          },
+        });
+      }
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error fetching feed: ${error.message}`,
+      );
+    }
+  }
 }
