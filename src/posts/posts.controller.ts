@@ -19,8 +19,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('posts')
+@ApiBearerAuth('access-token')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
