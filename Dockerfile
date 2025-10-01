@@ -2,18 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+RUN npm install -g pnpm
 
-RUN npm install --production=false
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install
 
 COPY . .
 
-RUN npx prisma generate
+RUN pnpm prisma generate
 
-RUN npx prisma migrate deploy
-
-RUN npm run build
+RUN pnpm build
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["pnpm", "start:prod"]
