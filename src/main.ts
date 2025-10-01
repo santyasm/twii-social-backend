@@ -1,20 +1,37 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
+    .setTitle('Twii Social API')
     .setDescription('The cats API description')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+
+  const theme = new SwaggerTheme();
+  const darkThemeCss = theme.getBuffer(SwaggerThemeNameEnum.DARK);
+
+  const customOptions: SwaggerCustomOptions = {
+    customCss: darkThemeCss.toString(),
+    customSiteTitle: 'Twii Social API (Dark Mode)',
+    swaggerOptions: {
+      docExpansion: 'list',
+      apisSorter: 'alpha',
+    },
+  };
+
+  SwaggerModule.setup('docs', app, document, customOptions);
 
   await app.listen(process.env.PORT ?? 3000);
 }
