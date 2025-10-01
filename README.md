@@ -1,98 +1,226 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://twii-social-backend.onrender.com/" target="blank"><img src="./docs/images/logo.svg" width="120" alt="Twii Logo" /></a>
+  <a href="https://twii-social-backend.onrender.com/docs" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="100" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 📱 Social Network API
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+API backend para uma rede social inspirada no Twitter, desenvolvida com **NestJS**, **Prisma** e **PostgreSQL**.
 
-## Description
+Os usuários podem criar contas, seguir outros usuários, fazer posts com imagens, curtir, comentar e visualizar um feed dinâmico.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 📘 Documentação da API
 
-```bash
-$ pnpm install
-```
+[![Swagger Documentation](https://img.shields.io/badge/Swagger-Documentation-green?style=for-the-badge&logo=swagger)](https://twii-social-backend.onrender.com/docs)
 
-## Compile and run the project
+**Acesse o link acima para a documentação interativa (OpenAPI) completa da API.**
 
-```bash
-# development
-$ pnpm run start
+---
 
-# watch mode
-$ pnpm run start:dev
+## 🚀 Tecnologias e Versões
 
-# production mode
-$ pnpm run start:prod
-```
+| Badge                                                                                                                                    | Descrição                               |
+| :--------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------- |
+| [![NestJS](https://img.shields.io/badge/NestJS-10.x-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)                            | Framework principal da aplicação.       |
+| [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)                         | Ambiente de execução JavaScript.        |
+| [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)                          | ORM para banco de dados.                |
+| [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)        | Banco de dados relacional.              |
+| [![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)                     | Autenticação baseada em tokens.         |
+| [![Cloudinary](https://img.shields.io/badge/Cloudinary-Image%20Storage-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com/) | Armazenamento e manipulação de imagens. |
+| [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?logo=swagger&logoColor=white)](https://swagger.io/)                      | Documentação interativa da API.         |
+| [![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)                   | Containerização e deploy.               |
 
-## Run tests
+## ✨ Features
 
-```bash
-# unit tests
-$ pnpm run test
+- **Autenticação** com JWT (login e registro)
+- **Usuários**
+  - CRUD de usuários
+  - Upload de avatar com Cloudinary
+  - Seguir e deixar de seguir outros usuários
+- **Posts**
+  - Criar posts com imagem opcional
+  - Atualizar e remover posts (somente o autor)
+  - Curtir e descurtir posts
+  - Comentar posts, editar e excluir comentários
+- **Feed**
+  - Visualizar todos os posts
+  - Filtrar apenas por posts de usuários seguidos
 
-# e2e tests
-$ pnpm run test:e2e
+---
 
-# test coverage
-$ pnpm run test:cov
-```
+## 📦 Instalação e uso
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 1. Clonar o repositório
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+git clone [https://github.com/santyasm/twii-social-backend.git](https://github.com/santyasm/twii-social-backend.git)
+cd twii-social-backend
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2\. Instalar dependências
 
-## Resources
+```bash
+# Usando pnpm
+pnpm install
 
-Check out a few resources that may come in handy when working with NestJS:
+# Usando npm
+npm install
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Usando yarn
+yarn install
+```
 
-## Support
+### 3\. Configurar variáveis de ambiente
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Crie um arquivo `.env` na raiz do projeto com as variáveis:
 
-## Stay in touch
+```bash
+DATABASE_URL="postgresql://user:password@host:port/dbname?schema=public"
+JWT_SECRET="sua_chave_secreta"
+CLOUDINARY_CLOUD_NAME="seu_cloud_name"
+CLOUDINARY_API_KEY="sua_api_key"
+CLOUDINARY_API_SECRET="sua_api_secret"
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 4\. Executar migrações do Prisma
 
-## License
+```bash
+# pnpm
+pnpm prisma migrate dev
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# npm
+npx prisma migrate dev
+
+# yarn
+yarn prisma migrate dev
+```
+
+### 5\. Rodar a aplicação em modo dev
+
+```bash
+# pnpm
+pnpm run start:dev
+
+# npm
+npm run start:dev
+
+# yarn
+yarn start:dev
+```
+
+### 6\. Rodar em produção
+
+Para rodar em produção, primeiro é necessário compilar o projeto (`build`) e depois iniciá-lo (`start:prod`):
+
+```bash
+# Passo 1: Compilar o projeto
+pnpm run build
+# ou
+npm run build
+# ou
+yarn build
+
+# Passo 2: Iniciar o servidor
+pnpm run start:prod
+# ou
+npm run start:prod
+# ou
+yarn start:prod
+```
+
+### 🐳 Usando Docker
+
+#### Build da imagem
+
+```bash
+docker build -t twii-social-backend .
+```
+
+#### Subir o container
+
+```bash
+docker run -p 3000:3000 --env-file .env twii-social-backend
+```
+
+## 🔷 Endpoints principais
+
+### Autenticação
+
+- `POST /auth/register` — Registro
+
+- `POST /auth/login` — Login
+
+### Usuários
+
+- `GET /users` — Listar todos
+
+- `GET /users/:id` — Buscar por ID
+
+- `PATCH /users/:id` — Atualizar usuário
+
+- `DELETE /users/:id` — Remover usuário
+
+- `POST /users/:id/follow` — Seguir usuário
+
+- `POST /users/:id/unfollow `— Deixar de seguir
+
+### Posts
+
+- `POST /posts` — Criar post
+
+- `GET /posts` — Listar posts
+
+- `GET /posts/:id `— Buscar post
+
+- `PATCH /posts/:id` — Atualizar post
+
+- `DELETE /posts/:id` — Remover post
+
+- `POST /posts/:id/like` — Curtir post
+
+- `POST /posts/:id/unlike` — Descurtir post
+
+- `POST /posts/:id/comments` — Comentar
+
+- `PATCH /posts/comments/:id` — Editar comentário
+
+- `DELETE /posts/comments/:id` — Excluir comentário
+
+### Feed
+
+- `GET /posts/feed` — Feed do usuário
+  - `?onlyFollowing=true` → apenas posts de quem o usuário segue
+  - `?onlyFollowing=false` → posts sugeridos (todos)
+
+## 📌 Roadmap
+
+- [ ] Sistema de **notificações** (likes, comentários, novos seguidores)
+- [ ] Suporte a **vídeos** nos posts
+- [ ] Sistema de **mensagens diretas (chat)**
+- [ ] Implementar **refresh token** para autenticação mais segura
+- [ ] Melhorar sistema de **recomendações (posts sugeridos)**
+- [ ] Criar **testes unitários e de integração** (Jest)
+- [ ] Deploy de **frontend integrado (Next.js)**
+
+## 👩‍💻 Contribuindo
+
+1.  Faça um fork do projeto
+
+2.  Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+
+3.  Commit suas alterações (`git commit -m 'feat: minha nova feature'`)
+
+4.  Faça push para a branch (`git push origin feature/nova-feature`)
+
+5.  Abra um Pull Request 🚀
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT.
+
+## 👩‍💻 Autora
+
+Feito com 💜 por Yasmin Santana
+[LinkedIn](https://www.linkedin.com/in/yasmin-santana-santos/) [GitHub](https://github.com/santyasm)
