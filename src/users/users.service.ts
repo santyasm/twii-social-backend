@@ -211,4 +211,33 @@ export class UsersService {
       );
     }
   }
+
+  async findByEmailVerifyToken(token: string) {
+    try {
+      return await this.prisma.user.findFirst({
+        where: { emailVerifyToken: token },
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error retrieving user with verification token: ${error.message}`,
+      );
+    }
+  }
+
+  async verifyEmail(userId: string) {
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          emailVerified: true,
+          emailVerifyToken: null,
+          emailVerifyExpiry: null,
+        },
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error verifying email for user "${userId}": ${error.message}`,
+      );
+    }
+  }
 }

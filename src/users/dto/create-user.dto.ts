@@ -39,4 +39,12 @@ export class CreateUserDto {
   @IsOptional()
   @IsUrl()
   avatarUrl?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  emailVerifyToken?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  emailVerifyExpiry?: Date;
 }

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://twii-social-backend.onrender.com/" target="blank"><img src="./docs/images/logo.svg" width="120" alt="Twii Logo" /></a>
+  <a href="https://twii-social-backend.onrender.com/" target="blank"><img src="./docs/images/logo.svg" width="80" alt="Twii Logo"></a>
   <a href="https://twii-social-backend.onrender.com/docs" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="100" alt="Nest Logo" /></a>
 </p>
 
