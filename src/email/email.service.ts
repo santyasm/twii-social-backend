@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { TransportOptions } from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  private transporter;
+  private transporter: nodemailer.Transporter;
 
   constructor() {
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
@@ -25,7 +26,7 @@ export class EmailService {
       tls: {
         rejectUnauthorized: false,
       },
-    });
+    } as TransportOptions);
 
     this.verifyConnection();
   }
@@ -65,7 +66,13 @@ export class EmailService {
       return result;
     } catch (error) {
       console.error('❌ Error sending verification email:', error);
-      throw new Error(`Failed to send verification email: ${error.message}`);
+
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown email server error.';
+
+      throw new InternalServerErrorException(
+        `Failed to send verification email: ${errorMessage}`,
+      );
     }
   }
 
@@ -84,11 +91,11 @@ export class EmailService {
             body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
                 line-height: 1.6;
-                color: #FFFF;
+                color: #0D0D0D; /* Corrigido para preto/escuro para fundo branco do container */
                 max-width: 600px;
                 margin: 0 auto;
                 padding: 20px;
-                background-color: #0D0D0D;
+                background-color: #f7f7f7; /* Fundo claro para o corpo do email */
             }
             .container {
                 background: white;
@@ -108,7 +115,7 @@ export class EmailService {
             }
             .title {
                 font-size: 24px;
-                color: #FFFF;
+                color: #0D0D0D;
                 margin-bottom: 20px;
             }
             .content {
@@ -117,7 +124,7 @@ export class EmailService {
             .button {
                 display: inline-block;
                 background: linear-gradient(135deg, #8adf23ff, #8ae31eff);
-                color: white;
+                color: white !important;
                 padding: 16px 32px;
                 text-decoration: none;
                 border-radius: 8px;
@@ -135,7 +142,7 @@ export class EmailService {
                 margin-top: 40px;
                 padding-top: 20px;
                 border-top: 1px solid #e5e7eb;
-                color: #bfbfbfff;
+                color: #9ca3af;
                 font-size: 14px;
             }
             .highlight {
@@ -155,11 +162,11 @@ export class EmailService {
             </div>
             
             <div class="content">
-                <p>Olá <strong>${name}</strong>! 👋</p>
+                <p style="color: #4a4a4a;">Olá <strong>${name}</strong>! 👋</p>
                 
-                <p>Bem-vindo(a) ao Twii! Estamos muito felizes em tê-lo(a) conosco.</p>
+                <p style="color: #4a4a4a;">Bem-vindo(a) ao Twii! Estamos muito felizes em tê-lo(a) conosco.</p>
                 
-                <p>Para começar a usar sua conta, você precisa confirmar seu endereço de email clicando no botão abaixo:</p>
+                <p style="color: #4a4a4a;">Para começar a usar sua conta, você precisa confirmar seu endereço de email clicando no botão abaixo:</p>
                 
                 <div style="text-align: center;">
                     <a href="${verificationUrl}" class="button">
@@ -172,9 +179,9 @@ export class EmailService {
                     <a href="${verificationUrl}" style="color: #8ae31eff; word-break: break-all;">${verificationUrl}</a>
                 </div>
                 
-                <p>Este link expira em 24 horas por motivos de segurança.</p>
+                <p style="color: #4a4a4a;">Este link expira em 24 horas por motivos de segurança.</p>
                 
-                <p>Se você não criou uma conta no Twii Social, pode ignorar este email com segurança.</p>
+                <p style="color: #4a4a4a;">Se você não criou uma conta no Twii Social, pode ignorar este email com segurança.</p>
             </div>
             
             <div class="footer">
