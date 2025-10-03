@@ -19,7 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ApiCookieAuth } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiCookieAuth } from '@nestjs/swagger';
 
 @Controller('posts')
 @ApiCookieAuth('auth_token')
@@ -29,6 +29,24 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          description: 'O conteúdo do post (obrigatório)',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Opcional: O arquivo de imagem para o post',
+        },
+      },
+      required: ['content'],
+    },
+  })
   create(
     @Body() createPostDto: CreatePostDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -40,6 +58,20 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', nullable: true },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Opcional: Nova imagem para o post',
+        },
+      },
+    },
+  })
   update(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,

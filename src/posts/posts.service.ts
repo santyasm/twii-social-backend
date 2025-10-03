@@ -24,7 +24,7 @@ export class PostsService {
       throw new Error('Author ID is required to create a post.');
     }
 
-    let imageUrl = createPostDto.imageUrl;
+    let imageUrl: string | undefined = undefined;
 
     if (file) {
       const result = await new Promise<any>((resolve, reject) => {
@@ -54,7 +54,6 @@ export class PostsService {
   async update(
     id: string,
     updatePostDto: UpdatePostDto,
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     file: Express.Multer.File | undefined,
     userId: string,
   ) {
@@ -65,7 +64,7 @@ export class PostsService {
       throw new ForbiddenException('You can only edit your own posts.');
     }
 
-    let imageUrl = updatePostDto.imageUrl;
+    let imageUrl: string | undefined = undefined;
 
     if (file) {
       const result = await new Promise<any>((resolve, reject) => {
