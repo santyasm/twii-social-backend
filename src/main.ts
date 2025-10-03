@@ -7,10 +7,12 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  app.use(cookieParser());
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({
@@ -24,16 +26,11 @@ async function bootstrap() {
     .setTitle('Twii Social API')
     .setDescription('The cats API description')
     .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Authorization',
-        in: 'header',
-      },
-      'access-token',
-    )
+    .addCookieAuth('auth_token', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'auth_token',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

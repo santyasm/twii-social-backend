@@ -66,7 +66,7 @@ export class AuthService {
     }
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<string> {
     try {
       const { usernameOrEmail, password } = dto;
       let user;
@@ -192,14 +192,12 @@ export class AuthService {
     }
   }
 
-  private generateToken(user: any) {
+  private generateToken(user: any): string {
     const payload = {
       sub: user.id,
       email: user.email,
       username: user.username,
     };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
   }
 }

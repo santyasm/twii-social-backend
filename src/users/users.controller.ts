@@ -17,10 +17,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCookieAuth } from '@nestjs/swagger';
 
 @Controller('users')
-@ApiBearerAuth('access-token')
+@ApiCookieAuth('auth_token')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
