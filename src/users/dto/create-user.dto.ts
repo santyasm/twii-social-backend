@@ -1,11 +1,6 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-  IsUrl,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'Yasmin Santana' })
@@ -25,20 +20,14 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    example: 'Fullstack dev apaixonada por NestJS',
+    example: 'Fullstack dev apaixonada por JS',
     required: false,
   })
   @IsOptional()
+  @Transform(({ value }) =>
+    value === null || value === undefined ? '' : value,
+  )
   bio?: string;
-
-  @ApiProperty({
-    example:
-      'https://res.cloudinary.com/flkaaf/image/upload/v1759267728/avatars/mhvasdagaxohrrzjixjjpev29k.png',
-    required: false,
-  })
-  @IsOptional()
-  @IsUrl()
-  avatarUrl?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

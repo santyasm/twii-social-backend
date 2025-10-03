@@ -18,6 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiCookieAuth } from '@nestjs/swagger';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @Controller('users')
 @ApiCookieAuth('auth_token')
@@ -51,6 +52,22 @@ export class UsersController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        bio: { type: 'string', nullable: true },
+        name: { type: 'string', nullable: true },
+        username: { type: 'string', nullable: true },
+
+        avatar: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -91,5 +108,12 @@ export class UsersController {
   @Get(':id/following')
   getFollowing(@Param('id') userId: string) {
     return this.usersService.getFollowing(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('me/avatar')
+  removeAvatar(@Req() req: any) {
+    const userId = req.user.id;
+    return this.usersService.removeAvatar(userId);
   }
 }

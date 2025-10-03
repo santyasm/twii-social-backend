@@ -78,7 +78,7 @@ export class UsersService {
     file?: Express.Multer.File,
   ) {
     try {
-      let avatarUrl = updateUserDto.avatarUrl;
+      let avatarUrl: string | undefined = undefined;
 
       if (file) {
         const result = await new Promise<any>((resolve, reject) => {
@@ -90,14 +90,21 @@ export class UsersService {
             },
           );
           stream.end(file.buffer);
+          avatarUrl = result.secure_url;
         });
 
         avatarUrl = result.secure_url;
       }
 
+      const dataToUpdate: Prisma.UserUpdateInput = { ...updateUserDto };
+
+      if (avatarUrl !== undefined) {
+        dataToUpdate.avatarUrl = avatarUrl;
+      }
+
       return await this.prisma.user.update({
         where: { id },
-        data: { ...updateUserDto, avatarUrl },
+        data: dataToUpdate,
       });
     } catch (error: any) {
       if (
@@ -245,6 +252,19 @@ export class UsersService {
     } catch (error: any) {
       throw new InternalServerErrorException(
         `Error verifying email for user "${userId}": ${error.message}`,
+      );
+    }
+  }
+
+  async removeAvatar(userId: string) {
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: { avatarUrl: null },
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Error removing avatar for user ID "${userId}": ${error.message}`,
       );
     }
   }
