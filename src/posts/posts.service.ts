@@ -89,14 +89,22 @@ export class PostsService {
   findAll() {
     return this.prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { author: true },
+      include: {
+        author: true,
+        Like: true,
+        Comment: { include: { author: true } },
+      },
     });
   }
 
   async findOne(id: string) {
     const post = await this.prisma.post.findUnique({
       where: { id },
-      include: { author: true },
+      include: {
+        author: true,
+        Like: true,
+        Comment: { include: { author: true } },
+      },
     });
     if (!post) throw new NotFoundException(`Post with ID "${id}" not found.`);
     return post;

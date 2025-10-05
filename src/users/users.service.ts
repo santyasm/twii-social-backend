@@ -51,10 +51,15 @@ export class UsersService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(username: string) {
     try {
       const user = await this.prisma.user.findUnique({
-        where: { id },
+        where: { username },
+        include: {
+          followers: true,
+          following: true,
+          Post: true,
+        },
         omit: {
           password: true,
           emailVerifyToken: true,
@@ -62,12 +67,15 @@ export class UsersService {
           updatedAt: true,
         },
       });
-      if (!user) throw new NotFoundException(`User with ID "${id}" not found.`);
+      if (!user)
+        throw new NotFoundException(
+          `User with username "${username}" not found.`,
+        );
       return user;
     } catch (error: any) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(
-        `Error retrieving user with ID "${id}": ${error.message}`,
+        `Error retrieving user with username "${username}": ${error.message}`,
       );
     }
   }

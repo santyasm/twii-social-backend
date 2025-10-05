@@ -39,14 +39,16 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@Req() req: any) {
-    const userId = req.user.id;
+    const username = req.user.username;
 
-    return this.usersService.findOne(userId);
+    console.log(req.user);
+
+    return this.usersService.findOne(username);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @Get(':username')
+  findOne(@Param('username') username: string) {
+    return this.usersService.findOne(username);
   }
 
   @Patch(':id')
