@@ -6,11 +6,14 @@ import {
   Query,
   Res,
   HttpCode,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import type { Response } from 'express';
+import { JwtAuthGuard } from './jwt/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -38,6 +41,14 @@ export class AuthController {
   @Post('register')
   async register(@Body() body: RegisterDto) {
     return this.authService.register(body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('auth_token', { path: '/' });
+
+    return { message: 'Logout successful' };
   }
 
   @Get('verify-email')
