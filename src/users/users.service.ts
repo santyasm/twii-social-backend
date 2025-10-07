@@ -14,15 +14,21 @@ import cloudinary from 'src/config/cloudinary.config';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      const normalizedDto = {
+        ...createUserDto,
+        email: createUserDto.email.toLowerCase(),
+        username: createUserDto.username.toLowerCase(),
+      };
+
+      const hashedPassword = await bcrypt.hash(normalizedDto.password, 10);
 
       return await this.prisma.user.create({
         data: {
-          ...createUserDto,
+          ...normalizedDto,
           password: hashedPassword,
         },
       });

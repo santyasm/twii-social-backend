@@ -41,8 +41,6 @@ export class UsersController {
   async getMe(@Req() req: any) {
     const username = req.user.username;
 
-    console.log(req.user);
-
     return this.usersService.findOne(username);
   }
 
