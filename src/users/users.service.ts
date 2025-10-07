@@ -64,7 +64,12 @@ export class UsersService {
         include: {
           followers: true,
           following: true,
-          Post: true,
+          Post: {
+            include: {
+              Like: true,
+              Comment: true
+            }
+          },
         },
         omit: {
           password: true,
