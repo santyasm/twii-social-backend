@@ -100,7 +100,7 @@ export class UsersService {
       let avatarUrl: string | undefined = undefined;
 
       if (file) {
-        const result = await new Promise<any>((resolve, reject) => {
+        const uploadResult: any = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             { folder: 'avatars' },
             (error, result) => {
@@ -109,10 +109,9 @@ export class UsersService {
             },
           );
           stream.end(file.buffer);
-          avatarUrl = result.secure_url;
         });
 
-        avatarUrl = result.secure_url;
+        avatarUrl = uploadResult.secure_url;
       }
 
       const dataToUpdate: Prisma.UserUpdateInput = { ...updateUserDto };
