@@ -23,7 +23,7 @@ import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 @Controller('users')
 @ApiCookieAuth('auth_token')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -31,7 +31,6 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.usersService.findAll();
   }
@@ -45,7 +44,6 @@ export class UsersController {
   }
 
   @Get(':username')
-  @UseGuards(JwtAuthGuard)
   findOne(@Param('username') username: string) {
     return this.usersService.findOne(username);
   }
