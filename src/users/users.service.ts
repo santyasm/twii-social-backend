@@ -47,9 +47,49 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(currentUserId?: string) {
     try {
-      return await this.prisma.user.findMany();
+      const users = await this.prisma.user.findMany({
+
+        include: {
+          followers: {
+            select: { followerId: true }
+          },
+          following: true,
+          Post: {
+            include: {
+              Like: true,
+              Comment: true
+            }
+          },
+        },
+
+        omit: {
+          password: true,
+          emailVerifyToken: true,
+          emailVerifyExpiry: true,
+          updatedAt: true,
+        },
+      });
+
+      const transformedUsers = users.map(user => {
+        let isFollowedByMe = false;
+
+
+        if (currentUserId && user.id !== currentUserId) {
+          isFollowedByMe = user.followers.some(
+            (follower) => follower.followerId === currentUserId,
+          );
+        }
+        const { followers, ...userWithoutFollowers } = user;
+
+        return {
+          ...userWithoutFollowers,
+          isFollowedByMe,
+        };
+      });
+
+      return transformedUsers;
     } catch (error: any) {
       throw new InternalServerErrorException(
         `Error retrieving users: ${error.message}`,
@@ -57,12 +97,14 @@ export class UsersService {
     }
   }
 
-  async findOne(username: string) {
+  async findOne(username: string, currentUserId?: string) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { username },
         include: {
-          followers: true,
+          followers: {
+            select: { followerId: true }
+          },
           following: true,
           Post: {
             include: {
@@ -78,11 +120,26 @@ export class UsersService {
           updatedAt: true,
         },
       });
+
       if (!user)
         throw new NotFoundException(
           `User with username "${username}" not found.`,
         );
-      return user;
+
+      let isFollowedByMe = false;
+
+      if (currentUserId && user.id !== currentUserId) {
+
+        isFollowedByMe = user.followers.some(
+          (follower) => follower.followerId === currentUserId,
+        );
+      }
+
+      console.log('currren user id: ', currentUserId);
+      console.log(user.followers)
+      console.log(isFollowedByMe)
+
+      return { ...user, isFollowedByMe };
     } catch (error: any) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(

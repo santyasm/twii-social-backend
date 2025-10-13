@@ -19,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiCookieAuth } from '@nestjs/swagger';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { OptionalJwtAuthGuard } from 'src/auth/jwt/optional-jwt-auth.guard';
 
 @Controller('users')
 @ApiCookieAuth('auth_token')
@@ -31,21 +32,25 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @UseGuards(OptionalJwtAuthGuard)
+  findAll(@Req() req: any) {
+    const currentUserId = req.user ? req.user.id : undefined;
+    return this.usersService.findAll(currentUserId);
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMe(@Req() req: any) {
+  getMe(@Req() req: any) {
     const username = req.user.username;
 
-    return this.usersService.findOne(username);
+    return this.usersService.findOne(username, req.user.id);
   }
 
   @Get(':username')
-  findOne(@Param('username') username: string) {
-    return this.usersService.findOne(username);
+  @UseGuards(OptionalJwtAuthGuard)
+  findOne(@Param('username') username: string, @Req() req: any) {
+    const currentUserId = req.user ? req.user.id : undefined;
+    return this.usersService.findOne(username, currentUserId);
   }
 
   @Patch(':id')
