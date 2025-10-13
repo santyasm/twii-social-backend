@@ -33,6 +33,9 @@ export class AuthController {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       path: '/',
+      domain: process.env.NODE_ENV === 'production'
+        ? process.env.DOMAIN
+        : undefined,
     });
 
     return { success: true, message: 'Login successful' };
