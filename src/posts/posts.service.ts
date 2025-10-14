@@ -138,7 +138,10 @@ export class PostsService {
       include: {
         author: true,
         likes: userId ? { where: { userId }, select: { id: true } } : false,
-        comments: { include: { author: true } },
+        comments: {
+          orderBy: { createdAt: 'desc' },
+          include: { author: true }
+        },
         _count: {
           select: {
             likes: true,
