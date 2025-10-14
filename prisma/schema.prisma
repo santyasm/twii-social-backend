@@ -28,28 +28,29 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  posts      Post[]
+  posts     Post[]
 
-  following Follow[]  @relation("UserFollowing")
-  followers Follow[]  @relation("UserFollowers")
+  following Follow[] @relation("UserFollowing")
+  followers Follow[] @relation("UserFollowers")
 
-  likes     Like[]
-  comments  Comment[]
+  likes    Like[]
+  comments Comment[]
 
   @@map("users")
 }
 
 model Post {
-  id        String    @id @default(uuid())
-  content   String
-  imageUrl  String?
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String   @id @default(uuid())
+  content       String
+  imageUrl      String?
+  imagePublicId String?
+  author        User     @relation(fields: [authorId], references: [id])
+  authorId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  likes     Like[]
-  comments  Comment[]
+  likes    Like[]
+  comments Comment[]
 
   @@map("posts")
 }

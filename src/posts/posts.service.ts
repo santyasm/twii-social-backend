@@ -10,6 +10,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import cloudinary from 'src/config/cloudinary.config';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Prisma } from 'generated/prisma';
+import { deleteImageFromCloudinary } from 'src/utils/cloudinary.util';
 
 @Injectable()
 export class PostsService {
@@ -24,7 +25,8 @@ export class PostsService {
       throw new Error('Author ID is required to create a post.');
     }
 
-    let imageUrl: string | undefined = undefined;
+    let imageUrl: string | undefined;
+    let imagePublicId: string | undefined;
 
     if (file) {
       const result = await new Promise<any>((resolve, reject) => {
@@ -37,13 +39,16 @@ export class PostsService {
         );
         stream.end(file.buffer);
       });
+
       imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
     }
 
     return this.prisma.post.create({
       data: {
         content: createPostDto.content,
         imageUrl,
+        imagePublicId,
         author: {
           connect: { id: authorId },
         },
@@ -64,9 +69,21 @@ export class PostsService {
       throw new ForbiddenException('You can only edit your own posts.');
     }
 
-    let imageUrl: string | undefined = undefined;
+    let imageUrl: string | undefined;
+    let imagePublicId: string | undefined;
+
 
     if (file) {
+      if (post.imagePublicId) {
+        try {
+          await cloudinary.uploader.destroy(post.imagePublicId);
+        } catch (error) {
+          console.error('Erro ao remover imagem do Cloudinary:', error);
+        }
+      } else if (post.imageUrl) {
+        await deleteImageFromCloudinary(post.imageUrl);
+      }
+
       const result = await new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: 'posts' },
@@ -78,6 +95,7 @@ export class PostsService {
         stream.end(file.buffer);
       });
       imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
     }
 
     return this.prisma.post.update({
@@ -153,8 +171,19 @@ export class PostsService {
       throw new ForbiddenException('You can only delete your own posts.');
     }
 
+    if (post.imagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(post.imagePublicId);
+      } catch (error) {
+        console.error('Erro ao remover imagem do Cloudinary:', error);
+      }
+    } else if (post.imageUrl) {
+      await deleteImageFromCloudinary(post.imageUrl);
+    }
+
     return this.prisma.post.delete({ where: { id } });
   }
+
 
   async likePost(userId: string, postId: string) {
     try {
