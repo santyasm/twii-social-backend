@@ -11,6 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from 'generated/prisma';
 import cloudinary from 'src/config/cloudinary.config';
+import { deleteImageFromCloudinary } from 'src/utils/cloudinary.util';
 
 @Injectable()
 export class UsersService {
@@ -174,23 +175,32 @@ export class UsersService {
     try {
       let avatarUrl: string | undefined = undefined;
 
-      if (file) {
-        const uploadResult: any = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: 'avatars' },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            },
-          );
-          stream.end(file.buffer);
-        });
+      const currentUser = await this.prisma.user.findUnique({ where: { id } });
+      if (!currentUser) {
+        throw new NotFoundException(`User with ID "${id}" not found.`);
+      }
 
-        avatarUrl = uploadResult.secure_url;
+      const oldAvatarUrl = currentUser.avatarUrl;
+
+      if (file) {
+        const [uploadResult] = await Promise.all([
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: 'avatars' },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              },
+            );
+            stream.end(file.buffer);
+          }),
+          oldAvatarUrl ? deleteImageFromCloudinary(oldAvatarUrl) : Promise.resolve(),
+        ]);
+
+        avatarUrl = (uploadResult as any).secure_url;
       }
 
       const dataToUpdate: Prisma.UserUpdateInput = { ...updateUserDto };
-
       if (avatarUrl !== undefined) {
         dataToUpdate.avatarUrl = avatarUrl;
       }
@@ -214,6 +224,16 @@ export class UsersService {
 
   async remove(id: string) {
     try {
+      const userToDelete = await this.prisma.user.findUnique({ where: { id } });
+
+      if (!userToDelete) {
+        throw new NotFoundException(`User with ID "${id}" not found.`);
+      }
+
+      if (userToDelete.avatarUrl) {
+        await deleteImageFromCloudinary(userToDelete.avatarUrl);
+      }
+
       return await this.prisma.user.delete({ where: { id } });
     } catch (error: any) {
       if (
@@ -351,6 +371,16 @@ export class UsersService {
 
   async removeAvatar(userId: string) {
     try {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID "${userId}" not found.`);
+      }
+
+      if (user.avatarUrl) {
+        await deleteImageFromCloudinary(user.avatarUrl);
+      }
+
       return await this.prisma.user.update({
         where: { id: userId },
         data: { avatarUrl: null },
