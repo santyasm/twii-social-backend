@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://twii-social-backend.onrender.com/" target="blank"><img src="./docs/images/logo.svg" width="80" alt="Twii Logo"></a>
-  <a href="https://twii-social-backend.onrender.com/docs" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="100" alt="Nest Logo" /></a>
+  <a href="https://twii-api.yasminsantana.fun/docs" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="100" alt="Nest Logo" /></a>
 </p>
 
 # 📱 Social Network API
@@ -13,7 +13,7 @@ Os usuários podem criar contas, seguir outros usuários, fazer posts com imagen
 
 ## 📘 Documentação da API
 
-[![Swagger Documentation](https://img.shields.io/badge/Swagger-Documentation-green?style=for-the-badge&logo=swagger)](https://twii-social-backend.onrender.com/docs)
+[![Swagger Documentation](https://img.shields.io/badge/Swagger-Documentation-green?style=for-the-badge&logo=swagger)](https://twii-api.yasminsantana.fun/docs)
 
 **Acesse o link acima para a documentação interativa (OpenAPI) completa da API.**
 
