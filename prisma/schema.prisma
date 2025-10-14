@@ -28,12 +28,13 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Post      Post[]
+  posts      Post[]
 
   following Follow[]  @relation("UserFollowing")
   followers Follow[]  @relation("UserFollowers")
-  Like      Like[]
-  Comment   Comment[]
+
+  likes     Like[]
+  comments  Comment[]
 
   @@map("users")
 }
@@ -46,8 +47,9 @@ model Post {
   authorId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Like      Like[]
-  Comment   Comment[]
+
+  likes     Like[]
+  comments  Comment[]
 
   @@map("posts")
 }

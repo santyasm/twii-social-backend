@@ -13,7 +13,7 @@ import { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(
     createPostDto: CreatePostDto,
@@ -86,28 +86,63 @@ export class PostsService {
     });
   }
 
-  findAll() {
-    return this.prisma.post.findMany({
+  async findAll() {
+    const posts = await this.prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         author: true,
-        Like: true,
-        Comment: { include: { author: true } },
+
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          }
+        }
       },
+    });
+
+    return posts.map(({ _count, author, ...rest }) => {
+      const { password, emailVerifyToken, emailVerified, emailVerifyExpiry, updatedAt, ...safeAuthor } = author;
+
+      return {
+        ...rest,
+        author: safeAuthor,
+        likeCount: _count.likes,
+        commentCount: _count.comments,
+      }
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId?: string) {
     const post = await this.prisma.post.findUnique({
       where: { id },
+
       include: {
         author: true,
-        Like: true,
-        Comment: { include: { author: true } },
+        likes: userId ? { where: { userId }, select: { id: true } } : false,
+        comments: { include: { author: true } },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
       },
     });
+
     if (!post) throw new NotFoundException(`Post with ID "${id}" not found.`);
-    return post;
+
+    const { password, emailVerifyToken, emailVerified, emailVerifyExpiry, updatedAt, ...safeAuthor } = post.author;
+
+    const { _count, likes, ...rest } = post;
+
+    return {
+      ...rest,
+      author: safeAuthor,
+      likeCount: _count.likes,
+      commentCount: _count.comments,
+      isLikedByMe: likes?.length > 0 || false,
+    };
   }
 
   async remove(id: string, userId: string) {
@@ -212,6 +247,8 @@ export class PostsService {
 
   async getFeed(userId: string, onlyFollowing: boolean = true) {
     try {
+      let posts;
+
       if (onlyFollowing) {
         const following = await this.prisma.follow.findMany({
           where: { followerId: userId },
@@ -220,29 +257,57 @@ export class PostsService {
 
         const followingIds = following.map((f) => f.followingId);
 
-        return await this.prisma.post.findMany({
+        posts = await this.prisma.post.findMany({
           where: { authorId: { in: followingIds } },
           orderBy: { createdAt: 'desc' },
           include: {
             author: true,
-            Like: true,
-            Comment: { include: { author: true } },
+
+            likes: userId ? { where: { userId }, select: { id: true } } : false,
+
+            _count: {
+              select: {
+                likes: true,
+                comments: true,
+              },
+            },
           },
         });
       } else {
-        return await this.prisma.post.findMany({
+        posts = await this.prisma.post.findMany({
           orderBy: { createdAt: 'desc' },
           include: {
             author: true,
-            Like: true,
-            Comment: { include: { author: true } },
+
+            likes: userId ? { where: { userId }, select: { id: true } } : false,
+
+            _count: {
+              select: {
+                likes: true,
+                comments: true,
+              },
+            },
           },
         });
       }
+
+      return posts.map(({ _count, author, likes, ...rest }) => {
+        const { password, emailVerifyToken, emailVerified, emailVerifyExpiry, updatedAt, ...safeAuthor } = author;
+
+        return {
+          ...rest,
+          author: safeAuthor,
+          likeCount: _count.likes,
+          commentCount: _count.comments,
+          isLikedByMe: likes?.length > 0 || false,
+        }
+      });
+
     } catch (error: any) {
       throw new InternalServerErrorException(
         `Error fetching feed: ${error.message}`,
       );
     }
   }
+
 }

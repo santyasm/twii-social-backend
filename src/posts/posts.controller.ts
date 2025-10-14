@@ -24,7 +24,7 @@ import { ApiBody, ApiConsumes, ApiCookieAuth } from '@nestjs/swagger';
 @Controller('posts')
 @ApiCookieAuth('auth_token')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(private readonly postsService: PostsService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -94,8 +94,10 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user ? req.user.id : null;
+
+    return this.postsService.findOne(id, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -111,7 +113,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/unlike')
+  @Delete(':id/unlike')
   unlikePost(@Param('id') postId: string, @Req() req: any) {
     return this.postsService.unlikePost(req.user.id, postId);
   }

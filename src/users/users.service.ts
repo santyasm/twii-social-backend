@@ -56,10 +56,10 @@ export class UsersService {
             select: { followerId: true }
           },
           following: true,
-          Post: {
+          posts: {
             include: {
-              Like: true,
-              Comment: true
+              likes: true,
+              comments: true
             }
           },
         },
@@ -106,10 +106,21 @@ export class UsersService {
             select: { followerId: true }
           },
           following: true,
-          Post: {
+          posts: {
+            orderBy: { createdAt: "desc" },
             include: {
-              Like: true,
-              Comment: true
+              likes: currentUserId
+                ? {
+                  where: { userId: currentUserId },
+                  select: { id: true },
+                }
+                : false,
+              _count: {
+                select: {
+                  likes: true,
+                  comments: true,
+                }
+              }
             }
           },
         },
@@ -135,11 +146,18 @@ export class UsersService {
         );
       }
 
-      console.log('currren user id: ', currentUserId);
-      console.log(user.followers)
-      console.log(isFollowedByMe)
+      const postsWithCounts = user.posts.map((post) => ({
+        ...post,
+        likeCount: post._count.likes,
+        commentCount: post._count.comments,
+        isLikedByMe: post.likes?.length > 0 || false,
+      }));
 
-      return { ...user, isFollowedByMe };
+      return {
+        ...user,
+        posts: postsWithCounts,
+        isFollowedByMe,
+      };
     } catch (error: any) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(
