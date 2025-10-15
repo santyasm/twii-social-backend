@@ -11,6 +11,7 @@ import {
   UploadedFile,
   UnauthorizedException,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -46,6 +47,14 @@ export class UsersController {
     return this.usersService.findOne(username, req.user.id);
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('search')
+  search(@Query('q') query: string, @Req() req: any) {
+    const currentUserId = req.user ? req.user.id : undefined;
+
+    return this.usersService.search(query, currentUserId);
+  }
+
   @Get(':username')
   @UseGuards(OptionalJwtAuthGuard)
   findOne(@Param('username') username: string, @Req() req: any) {
@@ -72,6 +81,7 @@ export class UsersController {
       },
     },
   })
+
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

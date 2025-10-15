@@ -391,4 +391,57 @@ export class UsersService {
       );
     }
   }
+
+
+
+  async search(query: string, currentUserId?: string) {
+    if (!query) {
+      return [];
+    }
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            username: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      omit: {
+        password: true,
+        emailVerifyToken: true,
+        emailVerifyExpiry: true,
+        updatedAt: true,
+        emailVerified: true
+      },
+    });
+
+    if (!currentUserId) {
+      return users.map(user => ({
+        ...user,
+        isFollowedByMe: false,
+      }));
+    }
+
+    const following = await this.prisma.follow.findMany({
+      where: { followerId: currentUserId },
+      select: { followingId: true },
+    });
+
+    const followingIds = new Set(following.map(f => f.followingId));
+
+    return users.map(user => ({
+      ...user,
+      isFollowedByMe: followingIds.has(user.id),
+    }));
+  }
 }
