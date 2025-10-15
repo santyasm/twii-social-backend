@@ -132,15 +132,36 @@ export class PostsService {
   }
 
   async findOne(id: string, userId?: string) {
+
+    console.log(userId)
+
     const post = await this.prisma.post.findUnique({
       where: { id },
 
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            username: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+
         likes: userId ? { where: { userId }, select: { id: true } } : false,
+
         comments: {
           orderBy: { createdAt: 'desc' },
-          include: { author: true }
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                name: true,
+                avatarUrl: true,
+              },
+            }
+          }
         },
         _count: {
           select: {
@@ -153,13 +174,10 @@ export class PostsService {
 
     if (!post) throw new NotFoundException(`Post with ID "${id}" not found.`);
 
-    const { password, emailVerifyToken, emailVerified, emailVerifyExpiry, updatedAt, ...safeAuthor } = post.author;
-
     const { _count, likes, ...rest } = post;
 
     return {
       ...rest,
-      author: safeAuthor,
       likeCount: _count.likes,
       commentCount: _count.comments,
       isLikedByMe: likes?.length > 0 || false,

@@ -20,6 +20,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiBody, ApiConsumes, ApiCookieAuth } from '@nestjs/swagger';
+import { OptionalJwtAuthGuard } from 'src/auth/jwt/optional-jwt-auth.guard';
 
 @Controller('posts')
 @ApiCookieAuth('auth_token')
@@ -55,7 +56,7 @@ export class PostsController {
     return this.postsService.create(createPostDto, file, req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
@@ -94,6 +95,7 @@ export class PostsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string, @Req() req: any) {
     const userId = req.user ? req.user.id : null;
 
