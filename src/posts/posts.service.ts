@@ -133,8 +133,6 @@ export class PostsService {
 
   async findOne(id: string, userId?: string) {
 
-    console.log(userId)
-
     const post = await this.prisma.post.findUnique({
       where: { id },
 

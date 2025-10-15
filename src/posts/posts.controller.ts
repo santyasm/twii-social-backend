@@ -95,7 +95,7 @@ export class PostsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   findOne(@Param('id') id: string, @Req() req: any) {
     const userId = req.user ? req.user.id : null;
 
