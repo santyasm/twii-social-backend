@@ -44,7 +44,7 @@ model Post {
   content       String
   imageUrl      String?
   imagePublicId String?
-  author        User     @relation(fields: [authorId], references: [id])
+  author        User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -58,10 +58,10 @@ model Post {
 model Follow {
   id String @id @default(uuid())
 
-  follower   User   @relation("UserFollowing", fields: [followerId], references: [id])
+  follower   User   @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
   followerId String
 
-  following   User   @relation("UserFollowers", fields: [followingId], references: [id])
+  following   User   @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
 
   createdAt DateTime @default(now())
@@ -74,8 +74,8 @@ model Like {
   id     String @id @default(uuid())
   userId String
   postId String
-  user   User   @relation(fields: [userId], references: [id])
-  post   Post   @relation(fields: [postId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@map("likes")
@@ -86,8 +86,8 @@ model Comment {
   content   String
   authorId  String
   postId    String
-  author    User     @relation(fields: [authorId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
