@@ -29,24 +29,36 @@ Os usuários podem criar contas, seguir outros usuários, fazer posts com imagen
 | [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)        | Banco de dados relacional.              |
 | [![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)                     | Autenticação baseada em tokens.         |
 | [![Cloudinary](https://img.shields.io/badge/Cloudinary-Image%20Storage-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com/) | Armazenamento e manipulação de imagens. |
+| [![Resend](https://img.shields.io/badge/Resend-Email%20Service-4285F4?logo=mail&logoColor=white)](https://resend.com/)                   | Serviço de envio de emails.             |
 | [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?logo=swagger&logoColor=white)](https://swagger.io/)                      | Documentação interativa da API.         |
 | [![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)                   | Containerização e deploy.               |
 
 ## ✨ Features
 
 - **Autenticação** com JWT (login e registro)
+  - Autenticação segura com tokens JWT
+  - Verificação de email via token
+  - Proteção de rotas com Guards e estratégias Passport
 - **Usuários**
   - CRUD de usuários
   - Upload de avatar com Cloudinary
   - Seguir e deixar de seguir outros usuários
+  - Perfil personalizado com bio e informações
+  - Contagem de seguidores e seguindo
 - **Posts**
   - Criar posts com imagem opcional
   - Atualizar e remover posts (somente o autor)
   - Curtir e descurtir posts
   - Comentar posts, editar e excluir comentários
+  - Upload de imagens com Cloudinary
 - **Feed**
   - Visualizar todos os posts
   - Filtrar apenas por posts de usuários seguidos
+  - Paginação e ordenação de resultados
+- **Email**
+  - Envio de emails de verificação via Resend
+  - Templates HTML personalizados
+  - Confirmação de conta por email
 
 ---
 
@@ -82,6 +94,9 @@ JWT_SECRET="sua_chave_secreta"
 CLOUDINARY_CLOUD_NAME="seu_cloud_name"
 CLOUDINARY_API_KEY="sua_api_key"
 CLOUDINARY_API_SECRET="sua_api_secret"
+RESEND_API_KEY="sua_resend_api_key"
+FRONTEND_URL="url_do_frontend"
+SMTP_FROM="Twii <no-reply@seudominio.com>"
 ```
 
 ### 4\. Executar migrações do Prisma
@@ -152,6 +167,10 @@ docker run -p 3000:3000 --env-file .env twii-social-backend
 
 - `POST /auth/login` — Login
 
+- `GET /auth/verify-email` — Verificação de email
+
+- `POST /auth/resend-verification` — Reenviar email de verificação
+
 ### Usuários
 
 - `GET /users` — Listar todos
@@ -193,16 +212,19 @@ docker run -p 3000:3000 --env-file .env twii-social-backend
 - `GET /posts/feed` — Feed do usuário
   - `?onlyFollowing=true` → apenas posts de quem o usuário segue
   - `?onlyFollowing=false` → posts sugeridos (todos)
+  - `?page=1&limit=10` → paginação de resultados
+  - `?orderBy=createdAt&order=desc` → ordenação dos resultados
 
 ## 📌 Roadmap
 
 - [ ] Sistema de **notificações** (likes, comentários, novos seguidores)
 - [ ] Suporte a **vídeos** nos posts
-- [ ] Sistema de **mensagens diretas (chat)**
+- [ ] **Recuperação de senha** via email
+- [ ] Sistema de **hashtags** e busca por tópicos
+- [ ] **Mensagens diretas** entre usuários (chat)
 - [ ] Implementar **refresh token** para autenticação mais segura
 - [ ] Melhorar sistema de **recomendações (posts sugeridos)**
 - [ ] Criar **testes unitários e de integração** (Jest)
-- [ ] Deploy de **frontend integrado (Next.js)**
 
 ## 👩‍💻 Contribuindo
 
