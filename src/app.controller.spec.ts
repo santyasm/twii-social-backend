@@ -15,8 +15,19 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should render HTML on root route', () => {
+      const res: any = {
+        type: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      };
+
+      appController.getHome(res);
+
+      expect(res.type).toHaveBeenCalledWith('html');
+      expect(res.send).toHaveBeenCalled();
+      const html = (res.send as jest.Mock).mock.calls[0][0];
+      expect(html).toContain('Twii API');
+      expect(html).toContain('/docs');
     });
   });
 });
